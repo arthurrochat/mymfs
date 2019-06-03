@@ -16,7 +16,7 @@ void addToConfig(char* fileName) {
     }
 }
 
-int checkFileInConfig(char* fileName) {
+int checkFileInConfig(char* fileName, int log) {
     int found = 0;
     char str[1000];
     char* filePath = (char *) malloc(strlen(folderPath) + 50);
@@ -29,7 +29,7 @@ int checkFileInConfig(char* fileName) {
             }
         }
     }
-    if(found == 0) {
+    if(found == 0 && log == 0) {
         printf("Cannot find file in config");
     }
 
@@ -118,7 +118,9 @@ void handleListAll() {
             printf("Directory not found\n");
         } else {
             while((entry = readdir(dir)) != NULL) {
-                printf("%s\n", entry->d_name);
+                if(checkFileInConfig(entry->d_name, 1) == 1) {
+                    printf("%s\n", entry->d_name);
+                }
             }
             closedir(dir);
         }
@@ -126,7 +128,7 @@ void handleListAll() {
 }
 
 void handleExport(char* src, char* dest) {
-    if(checkConfig() == 1 && checkFileInConfig(src) == 1) {
+    if(checkConfig() == 1 && checkFileInConfig(src, 0) == 1) {
         char* fileSrc = (char *) malloc(strlen(folderPath) + strlen(src));
         strcpy(fileSrc, folderPath);
         strcat(fileSrc, src);
@@ -135,7 +137,7 @@ void handleExport(char* src, char* dest) {
 }
 
 void handleRemove(char* fileName) {
-    if(checkConfig() == 1 && checkFileInConfig(fileName) == 1) {
+    if(checkConfig() == 1 && checkFileInConfig(fileName, 0) == 1) {
         char* filePath = (char *) malloc(strlen(folderPath) + strlen(fileName));
         strcpy(filePath, folderPath);
         strcat(filePath, "/");
@@ -164,7 +166,7 @@ void handleRemoveAll() {
 }
 
 void handleHead100(char* fileName) {
-    if(checkConfig() == 1 && checkFileInConfig(fileName) == 1) {
+    if(checkConfig() == 1 && checkFileInConfig(fileName, 0) == 1) {
         int counter = 0;
         char ch;
         char* filePath = getFilePath(fileName);
@@ -180,7 +182,7 @@ void handleHead100(char* fileName) {
 }
 
 void handleTail100(char* fileName) {
-    if(checkConfig() == 1 && checkFileInConfig(fileName) == 1) {
+    if(checkConfig() == 1 && checkFileInConfig(fileName, 0) == 1) {
         int counter = 0;
         int size = 5;
         char ch;
@@ -214,7 +216,7 @@ void handleGrep(char* fileName, char* word) {
     int counter = 0;
     int found = 0;
 
-    if(checkConfig() == 1 && checkFileInConfig(fileName) == 1) {
+    if(checkConfig() == 1 && checkFileInConfig(fileName, 0) == 1) {
         if ((fs = fopen(filePath, "r")) != NULL) {
             while((fgets(str, sizeof(str), fs)) != NULL && found == 0) {
                 counter++;
